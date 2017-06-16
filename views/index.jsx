@@ -64,6 +64,12 @@ class TodoForm extends React.Component {
   }
 }
 
+let style = {
+  tableContent: {
+    border: "1px solid black"
+  } 
+};
+
 // This code uses the optional React.js JSX syntax to create our views,
 // which we shall use throughout the rest of this workshop.
 
