@@ -5,8 +5,14 @@ var body = DOM.body;
 var div = DOM.div;
 var script = DOM.script;
 
-var browserify = require('browserify);
+var browserify = require('browserify');
 var babelify = require("babelify");
+
+require('babel/register')({
+  ignore: flase
+});
+
+var TodoBox = require('./views/index.jsx');
 
 var express = require('express');
 var app = express();
@@ -20,8 +26,6 @@ require('babel/register')({
     ignore: false
 });
 
-var TodoBox = require('./views/index.jsx');
-
 var data = [
   {title: "Shopping", detail: process.argv[3]},
   {title: "Hair cut", detail: process.argv[4]}
@@ -32,10 +36,10 @@ app.use('/bundle.js', function (req, res) {
 
   browserify({ debug: true })
     .transform(babelify.configure({
-      presets: ["react", "es2016"],
-        compact: false
+      presets: ["react", "es2015"],
+      compact: false
     }))
-    .require("./app.js", { entry: true })
+    .require("./app,js", { entry: true })
     .bundle()
     .pipe(res);
 });
@@ -47,7 +51,7 @@ app.use('/', function (req, res) {
   res.setHeader('Content-Type', 'text/html');
 
   var html = ReactDOMServer.renderToStaticMarkup(body(null,
-    div({id: 'app', dangerouslySetInnerHTML: {_html: markup}}),
+    div({id: 'app', dangerouslySetInnerHTML: {__html: markup}}),
     script({
       id: 'initial-data',
       type: 'text/plain',
@@ -57,7 +61,10 @@ app.use('/', function (req, res) {
   ));
 
   res.end(html);
+});
 
+app.use('/', function (req, res) {
+    res.render('index', {data: data});
 });
 
 app.listen(app.get('port'), function () {
@@ -66,4 +73,3 @@ app.listen(app.get('port'), function () {
 // The code above creates a small Express server that renders our React
 // components. If someone navigates to /, views/index.jsx will be rendered.
 // This program uses the express-react-views module.
-
