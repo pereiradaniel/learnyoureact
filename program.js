@@ -9,7 +9,7 @@ var browserify = require('browserify');
 var babelify = require("babelify");
 
 require('babel/register')({
-  ignore: flase
+  ignore: false
 });
 
 var TodoBox = require('./views/index.jsx');

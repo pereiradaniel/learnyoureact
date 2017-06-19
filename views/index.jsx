@@ -23,6 +23,7 @@ class TodoList extends React.Component {
     this.changeTitle = this.changeTitle.bind(this);
     this.changeDetail = this.changeDetail.bind(this);
     this.addTodo = this.addTodo.bind(this);
+    this.deleteTodo = this.deleteTodo.bind(this);
   }
 
   changeTitle(e) {
@@ -32,16 +33,21 @@ class TodoList extends React.Component {
     this.setState({detaileValue: e.target.value})
   }
   addTodo() {
-    let newDate = this.state.data;
+    let newData = this.state.data;
     newData.push({
-      title: this.state.titleValue;
-      detail: this.state.detailValue;
+      title: this.state.titleValue,
+      detail: this.state.detailValue
     });
     this.setState({data: newData});
     this.setState({titleValue: ""});
     this.setState({detailValue: ""});
   }
-
+  deleteTodo(title) {
+    let newData = this.state.data.filter(function (todo) {
+      return todo.title !== title;
+    });
+    this.setState({data: newData});
+  }
   render() {
   let todo = this.props.data.map(function(obj) { return <Todo title={obj.title} key={obj.title}>{obj.detail}</Todo>});
     return (
@@ -56,7 +62,7 @@ class TodoList extends React.Component {
                   value={this.state.detailValue}
                   onChange={this.changeDetail} />
           <button onClick={this.addTodo}>Add</button>
-        </div>      
+        </div>
         <table style={{border: "2px solid black"}}>
           <tbody>
             {todo}
@@ -69,22 +75,33 @@ class TodoList extends React.Component {
 
 class Todo extends React.Component {
   constructor(props) {
-      super(props);
-      this.state = {checked: false};
+    super(props);
+    this.state = {
+      checked: false,
+      TodoStyle: style.notCheckedTodo
+    };
+    this.handleChange = this.handleChange.bind(this);
+    this._onDelete = this._onDelete.bind(this);
   }
   handleChange(e) {
     this.setState({checked: e.target.checked});
   }
+  _onDelete() {
+    this.props.onDelete(this.props.title);
+  }
   render() {
     return (
-      <tr>
-        <td style={{border: "1px solid black"}}>
+      <tr style={this.state.TodoStyle}>
+        <td style={style.tableContent}>
+          <button onClick={this._onDelete}>X</button>
+        </td>
+        <td>
           <input type="checkbox"
                  checked={this.state.checked}
-                 onChange={this.handleChange.bind(this)} />
+                 onChange={this.handleChange} />
         </td>
-        <td style={{border: "1px solid black"}}>{this.props.title}</td>
-        <td style={{border: "1px solid black"}}>{this.props.children}</td>
+        <td style={style.tableContent}>{this.props.title}</td>
+        <td style={style.tableContent}>{this.props.children}</td>
       </tr>
     );
   }
@@ -113,7 +130,7 @@ let style = {
   },
   tableContent: {
     border: "1px solid black"
-  } 
+  }
 };
 
 // This code uses the optional React.js JSX syntax to create our views,
